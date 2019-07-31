@@ -1,6 +1,6 @@
 {
   "name": "@jaszhix/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Helper functions that are faster than native alternatives in some situations.",
   "private": false,
   "author": "Jason Hicks",
