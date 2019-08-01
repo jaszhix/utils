@@ -1,6 +1,6 @@
 {
   "name": "@jaszhix/utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Helper functions that are faster than native alternatives in some situations.",
   "private": false,
   "author": "Jason Hicks",
@@ -26,6 +26,7 @@
     "new:patch": "yarn version --no-git-tag-version --patch",
     "postnew:patch": "yarn deploy"
   },
+  "main": "build/utils.js",
   "module": "build/utils.js",
   "types": "build/types/src/index.d.ts",
   "repository": {
