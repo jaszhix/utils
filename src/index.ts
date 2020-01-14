@@ -81,6 +81,55 @@ const tryFn = function(fn: (...args: any[]) => any, errCb?: (e: Error) => any): 
   }
 };
 
+const cloneDeep = function(obj: any, refs: object[] = []): any {
+  if (refs.indexOf(obj) > -1) return obj;
+
+  if (Array.isArray(obj)) {
+    obj = obj.slice();
+
+    for (let i = 0, len = obj.length; i < len; i++) {
+      obj[i] = cloneDeep(obj[i]);
+    }
+
+    return obj;
+  }
+
+  if (obj == null || typeof obj !== 'object') return obj;
+
+  refs.push(obj);
+
+  obj = {...obj};
+
+  const keys = Object.keys(obj);
+
+  for (let i = 0, len = keys.length; i < len; i++) {
+    let key = keys[i];
+
+    switch (true) {
+      case (Array.isArray(obj[key])): {
+        obj[key] = obj[key].slice();
+
+        let arr = obj[key];
+
+        for (let z = 0, len = arr.length; z < len; z++) {
+          if (arr[z] != null && typeof arr[z] === 'object') {
+            arr[z] = cloneDeep(arr[z], refs);
+          }
+        }
+
+        break;
+      }
+
+      case (obj[key] != null && typeof obj[key] === 'object'): {
+        obj[key] = cloneDeep(obj[key], refs);
+        break;
+      }
+    }
+  }
+
+  return obj;
+}
+
 export {
   each,
   rEach,
@@ -88,5 +137,6 @@ export {
   find,
   filter,
   map,
-  tryFn
+  tryFn,
+  cloneDeep,
 };

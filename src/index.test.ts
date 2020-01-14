@@ -5,7 +5,8 @@ import {
   find,
   filter,
   map,
-  tryFn
+  tryFn,
+  cloneDeep,
 } from './index';
 
 const testArray = Array(100).fill(Math.random());
@@ -16,6 +17,23 @@ const testCollection = [
   {a: 302, b: 2904, c: 132}
 ];
 const testCollectionKeys = ['a', 'b', 'c'];
+const testObject1 = {
+  x: 1,
+  y: 2,
+  z: 3,
+};
+const testObject2 = {
+  a: testCollection,
+  b: testObject1,
+  c: [null],
+  d: null,
+};
+const testCollection2 = [
+  testObject2,
+  {a: 25, b: 23, c: 44},
+  {a: 895, b: 432, c: 96},
+  {a: 302, b: 2904, c: 132},
+];
 
 test('each/Array: All items are iterated', () => {
   let count = 0;
@@ -186,4 +204,52 @@ test('tryFn: Returns the return value of the error callback', () => {
   });
 
   expect(value).toBe('Test123');
+});
+
+test('cloneDeep: Copies an object', () => {
+  let ref1 = testObject2;
+  let ref2 = cloneDeep(testObject2);
+
+  expect(ref1 === ref2).toBe(false);
+  expect(ref1.b === ref2.b).toBe(false);
+});
+
+test('cloneDeep: Copies a collection', () => {
+  let ref1 = testCollection2;
+  let ref2 = cloneDeep(testCollection2);
+
+  expect(ref1 === ref2).toBe(false);
+
+  for (let i = 0, len = ref1.length; i < len; i++) {
+    expect(ref1[i] === ref2[i]).toBe(false);
+  }
+
+  expect(ref1[0].b === ref2[0].b).toBe(false);
+  expect(ref1[0].a[0] === ref2[0].a[0]).toBe(false);
+});
+
+test('cloneDeep: Copies a global object', () => {
+  let ref1 = global;
+  let ref2 = cloneDeep(global);
+
+  expect(ref1 === ref2).toBe(false);
+});
+
+test('cloneDeep: Handles incorrect types', () => {
+  let fn = jest.fn(cloneDeep)
+
+  let nullValue = fn(null);
+  let undefinedValue = fn(undefined);
+  let numberValue0 = fn(0);
+  let numberValue1 = fn(1);
+  let stringValue1 = fn('');
+  let stringValue2 = fn('test');
+
+  expect(fn).toHaveBeenCalledTimes(6);
+  expect(nullValue).toBe(null);
+  expect(undefinedValue).toBe(undefined);
+  expect(numberValue0).toBe(0);
+  expect(numberValue1).toBe(1);
+  expect(stringValue1).toBe('');
+  expect(stringValue2).toBe('test');
 });
