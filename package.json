@@ -35,19 +35,19 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^24.0.16",
+    "@types/jest": "^24.0.25",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
-    "es-check": "^5.0.0",
-    "eslint": "6.1.0",
-    "jest": "^24.8.0",
+    "es-check": "^5.1.0",
+    "eslint": "6.8.0",
+    "jest": "^24.9.0",
     "jest-extended": "^0.11.2",
-    "rollup": "^1.17.0",
-    "rollup-plugin-filesize": "^6.1.1",
+    "rollup": "^1.29.0",
+    "rollup-plugin-filesize": "^6.2.1",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-typescript2": "^0.22.1",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.5.3"
+    "rollup-plugin-typescript2": "^0.25.3",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
   }
 }
