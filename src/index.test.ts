@@ -231,8 +231,18 @@ test('cloneDeep: Copies a collection', () => {
 test('cloneDeep: Copies a global object', () => {
   let ref1 = global;
   let ref2 = cloneDeep(global);
+  let keys = Object.keys(ref1);
 
   expect(ref1 === ref2).toBe(false);
+  expect(keys.length === Object.keys(ref2).length).toBe(true);
+
+  for (let i = 0, len = keys.length; i < len; i++) {
+    let key = keys[i];
+
+    if (ref1[key] != null && typeof ref1[key] === 'object' && key !== 'global') {
+      expect(ref1[key] === ref2[key]).toBe(false);
+    }
+  }
 });
 
 test('cloneDeep: Handles incorrect types', () => {
