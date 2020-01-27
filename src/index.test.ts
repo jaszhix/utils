@@ -1,3 +1,5 @@
+/// <reference path="../index.d.ts" />
+
 import {
   each,
   rEach,
@@ -9,7 +11,12 @@ import {
   cloneDeep,
 } from './index';
 
-const testArray = Array(100).fill(Math.random());
+const testArray = Array(100);
+
+for (let i = 0, len = testArray.length; i < len; i++) {
+  testArray[i] = Math.random();
+}
+
 const testCollection = [
   {a: 1, b: 2, c: 3},
   {a: 25, b: 23, c: 44},
@@ -51,7 +58,7 @@ test('each/Array: Returning false breaks out of iteration', () => {
   each(testArray, (item, index) => {
     count++;
 
-    if (index > 40) return false;
+    if (<number>index > 40) return false;
   });
 
   expect(count).toBe(42);
@@ -215,8 +222,8 @@ test('cloneDeep: Copies an object', () => {
 });
 
 test('cloneDeep: Copies a collection', () => {
-  let ref1 = testCollection2;
-  let ref2 = cloneDeep(testCollection2);
+  let ref1: any = testCollection2;
+  let ref2: any = cloneDeep(testCollection2);
 
   expect(ref1 === ref2).toBe(false);
 
@@ -229,8 +236,8 @@ test('cloneDeep: Copies a collection', () => {
 });
 
 test('cloneDeep: Copies a global object', () => {
-  let ref1 = global;
-  let ref2 = cloneDeep(global);
+  let ref1: any = global;
+  let ref2: any = cloneDeep(global);
   let keys = Object.keys(ref1);
 
   expect(ref1 === ref2).toBe(false);

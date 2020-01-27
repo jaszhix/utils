@@ -1,4 +1,4 @@
-const each = function(obj: any, fn: (elementOrValue, indexOrKey) => any): undefined {
+const each = function(obj: any, fn: (elementOrValue?: any, indexOrKey?: number | string) => any): undefined {
   if (Array.isArray(obj)) {
     for (let i = 0, len = obj.length; i < len; i++) {
       if (fn(obj[i], i) === false) {
@@ -7,29 +7,32 @@ const each = function(obj: any, fn: (elementOrValue, indexOrKey) => any): undefi
     }
   } else if (typeof obj === 'object') {
     let keys = Object.keys(obj);
+
     for (let i = 0, len = keys.length; i < len; i++) {
       fn(obj[keys[i]], keys[i]);
     }
   }
 };
 
-const rEach = function(array: any[], fn: (element, index, nextIterationCallback) => void, finishFn: () => void, i: number = -1): void {
-  let next: Function;
-
+const rEach = function(
+  array: any[],
+  fn: (element: any, index: number, nextIterationCallback: () => void) => void,
+  finishFn: () => void,
+  i: number = -1
+): void {
   i++;
 
-  if (array[i] === undefined) {
-    if (typeof finishFn === 'function') finishFn();
+  if (array[i] == null) {
+    finishFn();
     return;
   }
 
-  next = () => rEach(array, fn, finishFn, i);
-  fn(array[i], i, next);
+  fn(array[i], i, () => rEach(array, fn, finishFn, i));
 }
 
-const findIndex = function(arr: any[], fn: (element, index, array) => boolean): number {
+const findIndex = function(arr: any[], fn: (element?: any, index?: number) => boolean): number {
   for (let i = 0, len = arr.length; i < len; i++) {
-    if (fn(arr[i], i, arr)) {
+    if (fn(arr[i], i)) {
       return i;
     }
   }
@@ -37,9 +40,9 @@ const findIndex = function(arr: any[], fn: (element, index, array) => boolean): 
   return -1;
 }
 
-const find = function(arr: any[], fn: (element, index, array) => boolean): any {
+const find = function(arr: any[], fn: (element?: any, index?: number) => boolean): any {
   for (let i = 0, len = arr.length; i < len; i++) {
-    if (fn(arr[i], i, arr)) {
+    if (fn(arr[i], i)) {
       return arr[i];
     }
   }
@@ -47,10 +50,11 @@ const find = function(arr: any[], fn: (element, index, array) => boolean): any {
   return null;
 }
 
-const filter = function (arr: any[], fn: (element, index, array) => boolean): any[] {
+const filter = function (arr: any[], fn: (element?: any, index?: number) => boolean): any[] {
   let result = [];
+
   for (let i = 0, len = arr.length; i < len; i++) {
-    if (fn(arr[i], i, arr)) {
+    if (fn(arr[i], i)) {
       result.push(arr[i]);
     }
   }
@@ -58,7 +62,7 @@ const filter = function (arr: any[], fn: (element, index, array) => boolean): an
   return result;
 };
 
-const map = function (arr: any[], fn: (element, index, array) => any): any[] {
+const map = function(arr: any[] | null | undefined, fn: (element?: any, index?: number) => any): any[] {
   if (arr == null) {
     return [];
   }
@@ -67,7 +71,7 @@ const map = function (arr: any[], fn: (element, index, array) => any): any[] {
   let out = Array(len);
 
   for (let i = 0; i < len; i++) {
-    out[i] = fn(arr[i], i, arr);
+    out[i] = fn(arr[i], i);
   }
 
   return out;

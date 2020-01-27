@@ -1,6 +1,6 @@
 {
   "name": "@jaszhix/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Helper functions that are faster than native alternatives in some situations.",
   "private": false,
   "author": "Jason Hicks",
@@ -28,7 +28,7 @@
   },
   "main": "build/utils.js",
   "module": "build/utils.js",
-  "types": "build/types/src/index.d.ts",
+  "types": "build/types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaszhix/utils.git"
