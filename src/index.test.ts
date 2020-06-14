@@ -1,5 +1,4 @@
-/// <reference path="../index.d.ts" />
-
+// @ts-nocheck
 import {
   each,
   rEach,
@@ -11,13 +10,19 @@ import {
   cloneDeep,
 } from './index';
 
-const testArray = Array(100);
+const testArray: number[] = Array(100);
 
 for (let i = 0, len = testArray.length; i < len; i++) {
   testArray[i] = Math.random();
 }
 
-const testCollection = [
+interface testC {
+  a: number;
+  b: number;
+  c: number;
+}
+
+const testCollection: testC[] = [
   {a: 1, b: 2, c: 3},
   {a: 25, b: 23, c: 44},
   {a: 895, b: 432, c: 96},
@@ -45,7 +50,8 @@ const testCollection2 = [
 test('each/Array: All items are iterated', () => {
   let count = 0;
 
-  each(testArray, (item, index) => {
+  each(testArray, (value, index) => {
+    let a = value + 1;
     count++;
   });
 
@@ -58,7 +64,7 @@ test('each/Array: Returning false breaks out of iteration', () => {
   each(testArray, (item, index) => {
     count++;
 
-    if (<number>index > 40) return false;
+    if (index > 40) return false;
   });
 
   expect(count).toBe(42);
@@ -94,7 +100,7 @@ test('rEach: All items are iterated', (done) => {
 });
 
 test('findIndex: Returns an index from an array', () => {
-  let index = findIndex(testCollection, (item, i) => {
+  let index = findIndex(testCollection, (item) => {
     return item.a === 895;
   });
 
@@ -102,9 +108,7 @@ test('findIndex: Returns an index from an array', () => {
 });
 
 test('findIndex: Returns a -1 value when indice isn\'t found', () => {
-  let index;
-
-  index = findIndex(testCollection, (item, i) => {
+  let index = findIndex(testCollection, (item, i) => {
     return item.a === 666;
   });
 
@@ -122,9 +126,7 @@ test('find: Returns correct element from an array', () => {
 });
 
 test('find: Returns a null value when element isn\'t found', () => {
-  let item;
-
-  item = find(testCollection, (item, i) => {
+  let item = find(testCollection, (item, i) => {
     return item.a === 666;
   });
 
@@ -172,6 +174,7 @@ test('map: Correctly maps an array', () => {
 
 test('map: Returns an empty array when the passed value is null or undefined', () => {
   let items = map(null, (item, i) => {
+    // @ts-ignore
     return item.a;
   });
 
@@ -179,6 +182,7 @@ test('map: Returns an empty array when the passed value is null or undefined', (
   expect(items.length).toBe(0);
 
   items = map(undefined, (item, i) => {
+    // @ts-ignore
     return item.a;
   });
 
@@ -222,8 +226,8 @@ test('cloneDeep: Copies an object', () => {
 });
 
 test('cloneDeep: Copies a collection', () => {
-  let ref1: any = testCollection2;
-  let ref2: any = cloneDeep(testCollection2);
+  let ref1 = testCollection2;
+  let ref2 = cloneDeep(testCollection2);
 
   expect(ref1 === ref2).toBe(false);
 
@@ -236,8 +240,8 @@ test('cloneDeep: Copies a collection', () => {
 });
 
 test('cloneDeep: Copies a global object', () => {
-  let ref1: any = global;
-  let ref2: any = cloneDeep(global);
+  let ref1 = global;
+  let ref2 = cloneDeep(global);
   let keys = Object.keys(ref1);
 
   expect(ref1 === ref2).toBe(false);

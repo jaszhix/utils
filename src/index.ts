@@ -1,25 +1,40 @@
-const each = function(obj: any, fn: (elementOrValue?: any, indexOrKey?: number | string) => any): undefined {
+type ArrayIterator<T, TResult> = (value: T, index: number) => TResult;
+type tryFnCb<T> = (...args: any[]) => T;
+
+function each<T>(
+  obj: ArrayLike<T>,
+  fn: (value: T, index: number | keyof T) => any,
+): void;
+function each<T>(
+  obj: T,
+  fn: (value: T[keyof T], index: keyof T | string) => any,
+): void;
+function each<T>(
+  obj: ArrayLike<T> | T,
+  fn: (value: T | T[keyof T], index: number | keyof T | string) => any,
+): void {
   if (Array.isArray(obj)) {
     for (let i = 0, len = obj.length; i < len; i++) {
-      if (fn(obj[i], i) === false) {
+      if (fn(obj[i] as T, i) === false) {
         return;
       }
     }
   } else if (typeof obj === 'object') {
-    let keys = Object.keys(obj);
+    let keys = Object.keys(obj) as (keyof T)[];
+
 
     for (let i = 0, len = keys.length; i < len; i++) {
-      fn(obj[keys[i]], keys[i]);
+      fn(((obj as T)[keys[i]] as T[keyof T]), keys[i]);
     }
   }
 };
 
-const rEach = function(
-  array: any[],
-  fn: (element: any, index: number, nextIterationCallback: () => void) => void,
+const rEach = <T>(
+  array: ArrayLike<T>,
+  fn: (element: T, index: number, nextIterationCallback: () => void) => void,
   finishFn: () => void,
   i: number = -1
-): void {
+): void => {
   i++;
 
   if (array[i] == null) {
@@ -30,7 +45,7 @@ const rEach = function(
   fn(array[i], i, () => rEach(array, fn, finishFn, i));
 }
 
-const findIndex = function(arr: any[], fn: (element?: any, index?: number) => boolean): number {
+const findIndex = <T>(arr: ArrayLike<T>, fn: ArrayIterator<T, boolean>): number => {
   for (let i = 0, len = arr.length; i < len; i++) {
     if (fn(arr[i], i)) {
       return i;
@@ -40,7 +55,7 @@ const findIndex = function(arr: any[], fn: (element?: any, index?: number) => bo
   return -1;
 }
 
-const find = function(arr: any[], fn: (element?: any, index?: number) => boolean): any {
+const find = <T>(arr: ArrayLike<T>, fn: ArrayIterator<T, boolean>): T | null => {
   for (let i = 0, len = arr.length; i < len; i++) {
     if (fn(arr[i], i)) {
       return arr[i];
@@ -50,7 +65,7 @@ const find = function(arr: any[], fn: (element?: any, index?: number) => boolean
   return null;
 }
 
-const filter = function (arr: any[], fn: (element?: any, index?: number) => boolean): any[] {
+const filter = <T>(arr: ArrayLike<T>, fn: ArrayIterator<T, boolean>): T[] => {
   let result = [];
 
   for (let i = 0, len = arr.length; i < len; i++) {
@@ -62,7 +77,7 @@ const filter = function (arr: any[], fn: (element?: any, index?: number) => bool
   return result;
 };
 
-const map = function(arr: any[] | null | undefined, fn: (element?: any, index?: number) => any): any[] {
+const map = <T, TResult>(arr: T[] | null | undefined, fn: ArrayIterator<T, TResult>): TResult[] => {
   if (arr == null) {
     return [];
   }
@@ -77,7 +92,7 @@ const map = function(arr: any[] | null | undefined, fn: (element?: any, index?: 
   return out;
 }
 
-const tryFn = function(fn: (...args: any[]) => any, errCb?: (e: Error) => any): any {
+const tryFn = <T>(fn: tryFnCb<T>, errCb?: tryFnCb<T>): T | undefined => {
   try {
     return fn();
   } catch (e) {
@@ -85,8 +100,13 @@ const tryFn = function(fn: (...args: any[]) => any, errCb?: (e: Error) => any): 
   }
 };
 
-const cloneDeep = function(obj: any, refs: object[] = []): any {
-  if (refs.indexOf(obj) > -1) return obj;
+function cloneDeep <T>(obj: T[], refs?: T[][]): T[]
+function cloneDeep <T>(obj: T, refs?: T[] | ArrayLike<T>[]): T
+function cloneDeep <T>(
+  obj: T | T[] | T & ArrayLike<T> | (T & ArrayLike<T>)[],
+  refs: T[] | ArrayLike<T>[] = []
+): T | T[] {
+  if (refs.indexOf(<T & ArrayLike<T>>obj) > -1) return obj;
 
   if (Array.isArray(obj)) {
     obj = obj.slice();
@@ -100,20 +120,20 @@ const cloneDeep = function(obj: any, refs: object[] = []): any {
 
   if (obj == null || typeof obj !== 'object') return obj;
 
-  refs.push(obj);
+  refs.push(obj as (T & ArrayLike<T>));
 
   obj = {...obj};
 
-  const keys = Object.keys(obj);
+  const keys = Object.keys(obj) as (keyof T)[];
 
   for (let i = 0, len = keys.length; i < len; i++) {
     let key = keys[i];
 
     switch (true) {
       case (Array.isArray(obj[key])): {
-        obj[key] = obj[key].slice();
+        obj[key] = (obj[key] as unknown as any & ArrayLike<any>).slice();
 
-        let arr = obj[key];
+        let arr = obj[key] as unknown as any[];
 
         for (let z = 0, len = arr.length; z < len; z++) {
           if (arr[z] != null && typeof arr[z] === 'object') {
@@ -125,7 +145,7 @@ const cloneDeep = function(obj: any, refs: object[] = []): any {
       }
 
       case (obj[key] != null && typeof obj[key] === 'object'): {
-        obj[key] = cloneDeep(obj[key], refs);
+        obj[key] = cloneDeep(obj[key] as unknown as T, refs) as unknown as T[keyof T];
         break;
       }
     }

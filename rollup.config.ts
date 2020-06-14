@@ -1,3 +1,4 @@
+//import {RollupOptions} from 'rollup';
 import filesize from 'rollup-plugin-filesize';
 import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
@@ -15,7 +16,7 @@ export default {
   output: {
     banner: '/* ' + pkg.name + ' ' + moduleVersion + ' */',
     file: pkg.module,
-    format: 'esm',
+    format: 'commonjs',
     sourcemap: true,
   },
   plugins: [
@@ -37,4 +38,4 @@ export default {
   watch: {
     clearScreen: false,
   },
-};
+} /* as RollupOptions */;
